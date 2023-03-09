@@ -1,7 +1,8 @@
-############################################################ 
-#Data collected from Stats Canada 
-#Data set: Consumer Price Index (CPI)
-#Created by Alicia Mckeough Feb 25th, 2023
+############################################################
+# CPI - Canadian Health Care System
+# Data collected from Stats Canada 
+# Data set: Consumer Price Index (CPI)
+# Created by Alicia Mckeough Feb 25th, 2023
 ############################################################ 
 #loading ggplot and forecasting packages 
 library(ggplot2) 
