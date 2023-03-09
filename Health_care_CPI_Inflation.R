@@ -19,7 +19,7 @@ Y<-ts(Health_CAN_CPI_2019_2023[,2],start=c(2019),frequency=12)
 
 
 # data parameters [,2] selecting from second column 
-# Starting data 2013, frequency is collected 12 times per year  
+# Starting data 2019, frequency is collected 12 times per year  
 ############################################################# 
 # Preform preliminary analysis   
 ############################################################# 
