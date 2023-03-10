@@ -1,20 +1,19 @@
 ############################################################
 # CPI - Canadian Health Care System
 # Data collected from Stats Canada 
-# Data set: Consumer Price Index (CPI)
 # Created by Alicia Mckeough Feb 25th, 2023
 ############################################################ 
-#loading ggplot and forecasting packages 
+# loading ggplot and forecasting packages 
 library(ggplot2) 
 install.packages("fpp2")
 library(fpp2) 
-#loading data  
+# loading data  
 library(readxl)
 Health_CAN_CPI_2019_2023 <- read_excel("Desktop/MMASc./Spring_semester/Consulting/Health_CAN_CPI_2019-2023.xlsx", 
                                          +     col_types = c("date", "numeric"))
 View(Health_CAN_CPI_2019_2023)                                                                                                                          
 
-#Convert data class to time series data 
+# Convert data class to time series data 
 Y<-ts(Health_CAN_CPI_2019_2023[,2],start=c(2019),frequency=12) 
 
 
@@ -37,81 +36,41 @@ autoplot(DY) +
   ylab("CPI") 
 
 ggseasonplot(DY) + 
-  ggtitle("Seasonal Plot: change in monthly CPI") +
+  ggtitle("Seasonal Plot: change in monthly CPI in Canadian Health Care") +
   ylab("CPI")
 ############################################################## 
-#Fit exponential smoothing model (ETS) - function determines best ETS model 
-############################################################## 
-fit_ets<-ets(DY) 
-print(summary(fit_ets)) 
-checkresiduals(fit_ets) 
-# ETS A,N,N model fits best with residual SD of 1261.411 
-############################################################### 
-# Fit Arima methods and returns best Arima model   
-fit_arima<-auto.arima(DY,d=1,stepwise = FALSE,approximation = FALSE,trace = TRUE) 
-# y=data d=1 regular difference in data to ensure data is stationary 
-# Approx and Stepwise = FALSE since we only have one data series  
-# Trace = TRUE will print out all the models it runs  
-#  Best model: ARIMA(0,1,0) with drift 
-print(summary(fit_arima)) 
-checkresiduals(fit_arima) 
-sqrt(393246)  
-# Residual SD 627.0933 (this model fits the best, has lower SD than ETS) 
-############################################################## 
-# Create a forecast with Arima model  
-############################################################## 
-FC<-forecast(fit_arima,h=5) #forecasting 5 years 
-# Graphing plot 
-autoplot(FC, include = 10)+  
-  ggtitle("Forecast of 5 years in Canada") +  
-  ylab("CPI") 
-my_autoplot<-autoplot(FC)+ ggtitle("Forecast of 2023 CPI in Canada's Health Care System") +  
-  ylab(" Consumer Price Index (CPI)") +  
-  xlab("Year")   
-my_autoplot + theme(text = element_text(size = 6)) +  
-  scale_x_continuous(breaks=seq(2019,2023,1)) 
-############################################################## 
-# ONTARIO GRAPH  
-############################################################## 
-#Convert data class to time series data 
-Y<-ts(canadaplasticD1[,3],start=c(2012),frequency=1) 
-# data parameters [,3] selecting from second column 
-# Starting data 2012, frequency is collected once per year  
-############################################################# 
-# Preform preliminary analysis   
-############################################################# 
-autoplot(Y) + ggtitle("Forecast of 5 years in Ontario") +  
-  ylab("Tons of Plastic leaked permanently into the environment") 
-# Data showing positive trend  
-############################################################## 
-#Fit exponential smoothing model (ETS) - function determines best ETS model 
+# Fit exponential smoothing model (ETS) - function determines best ETS model 
 ############################################################## 
 fit_ets<-ets(Y) 
 print(summary(fit_ets)) 
 checkresiduals(fit_ets) 
-# ETS A,N,N model fits best with residual SD of 1261.411 
+# ETS A,A,A model fits best with residual SD of 0.4282 
 ############################################################### 
-# Fit Arima methods and returns best Arima model   
-fit_arima<-auto.arima(Y,d=1,stepwise = FALSE,approximation = FALSE,trace = TRUE) 
-# y=data d=1 regular difference in data to ensure data is stationary 
+# Trying Arima method to determine best model   
+fit_arima<-auto.arima(Y,d=1,D=1,stepwise = FALSE,approximation = FALSE,trace = TRUE) 
+# y=data d=1 regular and D=1 seasonal difference in data to ensure data is stationary 
 # Approx and Stepwise = FALSE since we only have one data series  
 # Trace = TRUE will print out all the models it runs  
-#  Best model: ARIMA(0,1,0) with drift 
+#  Best model: ARIMA(0,1,0)(0,1,0)[12] 
 print(summary(fit_arima)) 
 checkresiduals(fit_arima) 
-sqrt(393246)  
-# Residual SD 627.0933 (this model fits the best, has lower SD than ETS) 
+sqrt(0.2419)  
+# Residual SD 0.4918333 (this model is not the best, as it has a higher SD than ETS) 
 ############################################################## 
-# Create a forecast with Arima model  
+# Create a forecast with ETS model  
 ############################################################## 
-FC<-forecast(fit_arima,h=5) #forecasting 5 years 
-# Graphing plot 
-autoplot(FC, include = 5)+  
-  ggtitle("Forecast of 5 years in Ontario") +  
-  ylab("Tons of Plastic leaked into environment") 
-my_autoplot<-autoplot(FC)+ ggtitle("Forecast of 5 years in Ontario") +  
-  ylab("Tons of Plastic leaked into environment") +  
+FC<-forecast(fit_ets,h=24) #forecasting 2 years 
+# Graphing plot - overview in the last 4 years
+my_autoplot<-autoplot(FC)+ ggtitle("Forecast of 2 years in Canada's Health Care System") +  
+  ylab(" Consumer Price Index (CPI)") +  
   xlab("Year")   
-my_autoplot + theme(text = element_text(size = 7)) +  
-  scale_x_continuous(breaks=seq(2012,2023,1)) 
+my_autoplot + theme(text = element_text(size = 10)) +  
+  scale_x_continuous(breaks=seq(2019,2025,1)) 
+
+# Zoom in closer to forecasting data - last two years "24 months" 
+# and 2 year forecast 
+autoplot(FC, include = 24)+  
+  ggtitle("Forecast of 2 years in Canada's Health Care System") +  
+  ylab(" Consumer Price Index (CPI)") + 
+  xlab("Year") 
 ############################################################## 
