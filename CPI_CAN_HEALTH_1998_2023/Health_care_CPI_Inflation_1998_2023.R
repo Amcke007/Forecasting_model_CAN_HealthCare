@@ -10,11 +10,11 @@ library(fpp2)
 # loading data  
 
 library(readxl)
-Health_Care_CAN_Inflation <- read_excel("Desktop/MMASc./Spring_semester/Consulting/Health_Care_CAN_Inflation.xlsx")
-View(Health_Care_CAN_Inflation) 
+Health_Care_CAN1998_2023 <- read_excel("Desktop/MMASc./Spring_semester/Consulting/Health_Care_CAN_Inflation.xlsx")
+View(Health_Care_CAN1998_2023) 
 
 # Convert data class to time series data 
-Y<-ts(Health_Care_CAN_Inflation[,2],start=c(1998),frequency=12) 
+Y<-ts(Health_Care_CAN1998_2023[,2],start=c(1998),frequency=12) 
 
 
 # data parameters [,2] selecting from second column 
@@ -44,7 +44,7 @@ ggseasonplot(DY) +
 fit_ets<-ets(Y) 
 print(summary(fit_ets)) 
 checkresiduals(fit_ets) 
-# ETS M,Ad,A model fits best with residual SD of 0.0027 
+# ETS M,Ad,A model fits best with residual SD (sigma) of 0.0027 
 ############################################################### 
 # Trying Arima method to determine best model   
 fit_arima<-auto.arima(Y,d=1,D=1,stepwise = FALSE,approximation = FALSE,trace = TRUE) 
