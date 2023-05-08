@@ -3,6 +3,7 @@
 # Data collected from Stats Canada 
 # Created by Alicia Mckeough Feb 25th, 2023
 ############################################################ 
+
 # loading ggplot and forecasting packages 
 library(ggplot2) 
 install.packages("fpp2")
@@ -12,6 +13,8 @@ library(fpp2)
 library(readxl)
 Health_Care_CAN1998_2023 <- read_excel("Desktop/MMASc./Spring_semester/Consulting/Health_Care_CAN_Inflation.xlsx")
 View(Health_Care_CAN1998_2023) 
+
+Health_Care_CAN1998_2023
 
 # Convert data class to time series data 
 Y<-ts(Health_Care_CAN1998_2023[,2],start=c(1998),frequency=12) 
@@ -44,6 +47,7 @@ ggseasonplot(DY) +
 fit_ets<-ets(Y) 
 print(summary(fit_ets)) 
 checkresiduals(fit_ets) 
+
 # ETS M,Ad,A model fits best with residual SD (sigma) of 0.0027 
 ############################################################### 
 # Trying Arima method to determine best model   
@@ -59,18 +63,33 @@ sqrt(0.1053)
 ############################################################## 
 # Create a forecast with ETS model  
 ############################################################## 
-FC<-forecast(fit_ets,h=48) #forecasting 4 years 
+
+FC<-forecast(fit_ets,h=12) #forecasting 4 years 
 # Graphing plot - overview in the last 25 years
-my_autoplot<-autoplot(FC)+ ggtitle("Forecast of 4 years in Canada's Health Care System with 25 years of Historical Data") +  
+my_autoplot<-autoplot(FC)+ ggtitle("Forecast of 2023 in Canada's Health Care System with 25 years of Historical Data") +  
   ylab(" Consumer Price Index (CPI)") +  
   xlab("Year")   
 my_autoplot + theme(text = element_text(size = 5)) +  
-  scale_x_continuous(breaks=seq(1998,2027,1)) 
+  scale_x_continuous(breaks=seq(1998,2024,1)) 
 
 # Zoom in closer to forecasting data - last four years "48 months" 
-my_autoplot_zoom <-autoplot(FC, include = 24) +  
-  ggtitle("Forecast of 4 years in Canada's Health Care System with 25 years of Historical Data") +  
+my_autoplot_zoom <-autoplot(FC, include = 48) +  
+  ggtitle("Forecast of 2023 in Canada's Health Care System with 25 years of Historical Data") +  
   ylab(" Consumer Price Index (CPI)") + 
   xlab("Year") 
 my_autoplot_zoom + theme(text = element_text(size = 8)) 
-############################################################## 
+
+
+###############################################################
+# showcasing inflation and deflation, and the predicted spike of CPI leading to inflation 2023
+################################################################
+fit_ets_DY<-ets(DY) 
+FC_DY <-forecast(fit_ets_DY,h=12) #forecasting 1 year 
+
+# Zoom in closer to forecasting data - last four years "48 months" 
+autoplot(FC_DY, include = 48) +  
+  ggtitle("Forecast of 2023 in Canada's Health Care System with 25 years of Historical Data") +  
+  ylab("Consumer Price Index (CPI)") +  
+  xlab("Year") +  
+  theme(plot.title = element_text(hjust = 0.5, size = 12))  
+
